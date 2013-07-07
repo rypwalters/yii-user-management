@@ -26,28 +26,49 @@ echo $form->errorSummary($model);
 <?php
 echo '<h3>' . Yum::t('Profile field public options') . '</h3>';
 echo '<p>' . Yum::t('Select the fields that should be public') . ':</p>';
+
+// Counters
+// Binary offset used to mask against the public_profile_fields db field for this user
 $i = 1;
 
-$counter=0;
+// Loop counter
+$counter = 0;	   
 
-foreach(YumProfileField::model()->findAll() as $field) {
+// Profile fields per column
+$iFieldsPerColumn = 4;
+
+// Start our results (cuz we're going to have some results)
+echo '<div class="float-left" style="width: 175px;">' . "\n";
+
+foreach( $profile->getProfileFields() as $field )
+{
+	// Inc our counter
 	$counter++;
-	if ($counter==1)echo '<div class="float-left" style="width: 175px;">';
 	
-	printf('<div>%s<label class="profilefieldlabel" for="privacy_for_field_%d">%s</label></div>',
+	// Show this profile field
+	printf('<div>%s<label class="profilefieldlabel" for="privacy_for_field_%d">%s</label></div>' . "\n",
 			CHtml::checkBox("privacy_for_field_{$i}",
 				$model->public_profile_fields & $i),
 			$i,
-			Yum::t($field->title)
-			
+			Yum::t( $field )
 			);
+	
+	// Shift our bitwise mask
 	$i *= 2;
 	
-	if ($counter%4==0) echo '</div><div class="float-left" style="width: 175px;">';
+	// Are we at a column break?
+	if( ( $counter % $iFieldsPerColumn ) == 0 )
+	{
+		echo '</div><div class="float-left" style="width: 175px;">' . "\n";
+	}
 }
-if ($counter%4!=0) echo '</div>';
-echo '<div class="clear"></div>';
+
+// Make sure that our columns are closed
+echo '</div>' . "\n";
+
 ?>
+<div class="clear"></div>
+
 </div>
 
 
